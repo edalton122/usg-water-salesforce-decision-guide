@@ -576,6 +576,7 @@
   }
 
   $('vid').addEventListener('ended', function () { $('cue').classList.add('lit'); });
+  $('vid').addEventListener('play', function () { $('cue').classList.remove('lit'); });
   $('pdf-btn').addEventListener('click', exportPdf);
 
   renderSources();
