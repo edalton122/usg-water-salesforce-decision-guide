@@ -14,7 +14,9 @@
     return '$' + Math.round(n);
   };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
-  var sup = function (src) { return (src || []).map(function (n) { return '<sup class="src"><a href="#s' + n + '">' + n + '</a></sup>'; }).join(''); };
+  var sup = function (src) {
+    return src && src.length ? '<sup class="src">' + src.map(function (n) { return '<a href="#s' + n + '">' + n + '</a>'; }).join(',') + '</sup>' : '';
+  };
   var pendingTag = function (ids) {
     var open = (ids || []).filter(function (id) { return !P.isConfirmed([id]); });
     return DRAFT && open.length ? '<span class="pending" title="Pending confirmation">Pending</span>' : '';
@@ -269,62 +271,182 @@
     var hs = P.hubspot;
     var lic = hs.licenseLines.reduce(function (t, l) { return t + l.annual; }, 0);
     var onboard = hs.onboarding.reduce(function (t, o) { return t + o.amount; }, 0);
+    var sfYear = opt.annual + (opt.keepsHubSpotMarketing ? P.salesforce.hubspotMarketingProAnnual : 0);
     return [
       { title: 'Functionality', rows: [
-        { topic: 'Forecasting', sf: 'Revenue cockpit: pipeline velocity, Best Case and Committed by month, win and loss.', sfSrc: [2],
+        { topic: 'Forecasting', sfHead: 'Revenue cockpit, built for USG', hsHead: 'About 3 hours of build', hsMark: 'warn',
+          sf: 'Revenue cockpit: pipeline velocity, Best Case and Committed by month, win and loss.', sfSrc: [2],
           hs: 'Pipelines and forecasting: 2.9 to 3.5 hours of build (p06).', hsSrc: [1] },
-        { topic: 'Big-deal approvals', sf: 'One approval per deal by line of business, with a note to finance and approval from the mobile app.', sfSrc: [2],
+        { topic: 'Big-deal approvals', sfHead: 'One approval per deal, on mobile', hsHead: 'Out of scope', hsMark: 'x',
+          sf: 'One approval per deal by line of business, with a note to finance and approval from the mobile app.', sfSrc: [2],
           hs: 'Finance approval modeling for over-$500K deals is out of scope (p11).', hsSrc: [1] },
-        { topic: 'Customer success', sf: '72-hour standard and 24-hour emergency response tracked on every case, with survey follow-ups sent to sellers as cross-sell signals.', sfSrc: [2],
+        { topic: 'Customer success', sfHead: 'Response times tracked on every case', hsHead: 'About 8 to 11 hours of build', hsMark: 'warn',
+          sf: '72-hour standard and 24-hour emergency response tracked on every case, with survey follow-ups sent to sellers as cross-sell signals.', sfSrc: [2],
           hs: 'Service Hub build: 8.0 to 10.8 hours (p06).', hsSrc: [1] },
-        { topic: 'Adoption', sf: 'Change management with adoption reviews at 30, 60 and 90 days. Every role trained, pricing team included.', sfSrc: [2],
+        { topic: 'Adoption', sfHead: 'Reviews at 30, 60 and 90 days', hsHead: 'No change management', hsMark: 'x',
+          sf: 'Change management with adoption reviews at 30, 60 and 90 days. Every role trained, pricing team included.', sfSrc: [2],
           hs: 'No change management workstream. 38 hours of training, none listed for the pricing team (p09).', hsSrc: [1] },
-        { topic: 'Go-live', sf: 'Week 10, then 30 days of support alongside your team.', sfSrc: [2], confirm: ['smbhd-sow'],
+        { topic: 'Go-live', sfHead: 'Week 10', hsHead: 'Week 12, subject to IT availability', hsMark: 'warn',
+          sf: 'Week 10, then 30 days of support alongside your team.', sfSrc: [2], confirm: ['smbhd-sow'],
           hs: 'End of week 12 of a 16-week plan, about 4 months from kickoff, “subject to IT availability” (p10, p11).', hsSrc: [1] }
       ] },
       { title: 'Integration', rows: [
-        { topic: 'Snowflake', sf: 'Data 360 reads Snowflake in place, with zero copy, so sellers see the numbers finance sees.', sfSrc: [2],
+        { topic: 'Snowflake', sfHead: 'Reads Snowflake in place', hsHead: 'Not in the proposal', hsMark: 'x',
+          sf: 'Data 360 reads Snowflake in place, with zero copy, so sellers see the numbers finance sees.', sfSrc: [2],
           hs: 'Snowflake is not mentioned anywhere in the proposal (pp. 01 to 12).', hsSrc: [1] },
-        { topic: 'Middleware', sf: 'Live links use Oracle Integration Cloud, which USG already owns. No new middleware to buy.', sfSrc: [3],
+        { topic: 'Middleware', sfHead: 'Uses the Oracle middleware USG owns', hsHead: money(hs.middlewareAnnual) + ' a year, extra', hsMark: 'warn',
+          sf: 'Live links use Oracle Integration Cloud, which USG already owns. No new middleware to buy.', sfSrc: [3],
           hs: 'RevOps Connect integration platform: $800 a month, billed separately from project hours (p07).', hsSrc: [1] },
-        { topic: 'ERP change', sf: 'ERP data reaches Salesforce through Snowflake, so an ERP change is a mapping project scoped with USG, not a CRM rebuild.', sfSrc: [3], confirm: ['erp-position'],
+        { topic: 'ERP change', sfHead: 'A mapping project, not a rebuild', hsHead: 'Re-point listed as out of scope', hsMark: 'x',
+          sf: 'ERP data reaches Salesforce through Snowflake, so an ERP change is a mapping project scoped with USG, not a CRM rebuild.', sfSrc: [3], confirm: ['erp-position'],
           hs: 'Calls a NetSuite cutover “a re-point, not a rebuild” (p07), then lists “NetSuite integration or re-pointing at cutover” as out of scope (p11).', hsSrc: [1] }
       ] },
       { title: 'CapEx', rows: [
-        { topic: 'Implementation', sf: money(opt.implementation) + ' fixed fee (' + opt.short + '), with migration from Oracle, training, change management and 30 days of support included.', sfSrc: [2], confirm: ['smbhd-sow'],
+        { topic: 'Implementation', sfHead: money(opt.implementation) + ' fixed fee', hsHead: short(hs.services.low) + ' to ' + short(hs.services.high) + ' estimate, not a cap', hsMark: 'warn',
+          sf: money(opt.implementation) + ' fixed fee (' + opt.short + '), with migration from Oracle, training, change management and 30 days of support included.', sfSrc: [2], confirm: ['smbhd-sow'],
           hs: money(hs.services.low) + ' to ' + money(hs.services.high) + ' estimate, time and materials at $250 an hour: “Estimates for budgeting; TCV is not a cap.” Added scope goes through a written change order (p04, p11).', hsSrc: [1] },
-        { topic: 'One-time license fees', sf: 'No onboarding fees in the Salesforce proposal.', sfSrc: [3], confirm: ['sf-quotes'],
+        { topic: 'One-time license fees', sfHead: 'No onboarding fees', hsHead: money(onboard) + ' required onboarding', hsMark: 'warn',
+          sf: 'No onboarding fees in the Salesforce proposal.', sfSrc: [3], confirm: ['sf-quotes'],
           hs: money(onboard) + ' in required HubSpot onboarding for Sales, Service and Marketing Hub Enterprise.', hsSrc: [4] },
-        { topic: 'Scope', sf: opt.keepsHubSpotMarketing ? 'Sales, Service and Data 360 under one fixed fee. Forms and campaigns stay in HubSpot.' : 'Sales, Service, Data 360 and Marketing Cloud under one fixed fee.', sfSrc: [2],
+        { topic: 'Scope', sfHead: opt.keepsHubSpotMarketing ? 'One fixed fee, marketing stays in HubSpot' : 'Everything above, one fixed fee', hsHead: 'Approvals, ERP re-point, marketing excluded', hsMark: 'x',
+          sf: opt.keepsHubSpotMarketing ? 'Sales, Service and Data 360 under one fixed fee. Forms and campaigns stay in HubSpot.' : 'Sales, Service, Data 360 and Marketing Cloud under one fixed fee.', sfSrc: [2],
           hs: 'Out of scope: over-$500K finance approvals, the NetSuite re-point, marketing content and CMS work, licenses and middleware fees (p11).', hsSrc: [1] }
       ] },
       { title: 'OpEx', rows: [
-        { topic: 'Every year of the term', sf: opt.keepsHubSpotMarketing
+        { topic: 'Every year of the term', sfHead: money(sfYear) + ' a year, flat', hsHead: money(r.opex.hs) + ' a year at list', hsMark: 'warn',
+          sf: opt.keepsHubSpotMarketing
             ? money(opt.annual) + ' a year for Salesforce, the same each year of the 36-month term, plus ' + money(P.salesforce.hubspotMarketingProAnnual) + ' a year at list to keep HubSpot Marketing Hub Professional.'
             : money(opt.annual) + ' a year, the same in each year of the 36-month term.', sfSrc: opt.keepsHubSpotMarketing ? [3, 4] : [3], confirm: ['sf-quotes'],
           hs: money(r.opex.hs) + ' a year at list: four Enterprise hubs (' + money(lic) + ') plus RevOps Connect (' + money(hs.middlewareAnnual) + ').', hsSrc: [1, 4] },
-        { topic: 'At renewal', sf: 'First renewal capped at 5%: at most ' + money(r.opex.sfRenewal) + ' in year 4.', sfSrc: [3], confirm: ['renewal-clause'],
+        { topic: 'At renewal', sfHead: 'Capped at 5%', hsHead: 'Up to then-current list price', hsMark: 'warn',
+          sf: 'First renewal capped at 5%: at most ' + money(r.opex.sfRenewal) + ' in year 4.', sfSrc: [3], confirm: ['renewal-clause'],
           hs: '“Upon renewal, we may increase your Subscription Fees up to our then-current list price.” With a ' + r.inputs.listChangePct + '% list change: ' + money(r.opex.hsRenewal) + ' in year 4.', hsSrc: [5] },
-        { topic: 'During the term', sf: 'License swap clause: USG can exchange licenses as its needs change.', sfSrc: [3], confirm: ['renewal-clause'],
+        { topic: 'During the term', sfHead: 'Swap licenses as needs change', hsHead: 'No downgrades until renewal', hsMark: 'x',
+          sf: 'License swap clause: USG can exchange licenses as its needs change.', sfSrc: [3], confirm: ['renewal-clause'],
           hs: '“You are not permitted to downgrade your Subscription Service during your Current Term.” Marketing contact tiers can’t be downgraded until renewal.', hsSrc: [4, 5] }
       ] }
     ];
   }
 
-  function renderOnePager(r) {
+  var ICON = {
+    ok: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v7.5M12 18h.01"/></svg>'
+  };
+  var MARK_LABEL = { ok: 'Covered', x: 'Not included', warn: 'Limited or extra cost' };
+  var mark = function (kind) { return '<i class="mk ' + kind + '" role="img" aria-label="' + MARK_LABEL[kind] + '">' + ICON[kind] + '</i>'; };
+  var CHEV = '<svg class="op-chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  var op = { tab: 0, open: {}, all: false, seen: false, bandSeen: false, scored: false };
+
+  function renderOnePager(r, animate) {
     var quads = onePager(r);
-    $('quad-grid').innerHTML = quads.map(function (q, i) {
-      return '<div class="quad reveal in"><div class="quad-h"><span class="num">' + (i + 1) + '</span><h3>' + q.title + '</h3></div>' +
-        '<div class="qcols"><span>Salesforce + SMBHD</span><span>HubSpot + RevOps HQ</span></div>' +
-        q.rows.map(function (row) {
-          return '<div class="qrow"><div class="qtopic">' + esc(row.topic) + pendingTag(row.confirm) + '</div><div class="qcells">' +
-            '<div class="qcell sf">' + esc(row.sf) + sup(row.sfSrc) + '</div>' +
-            '<div class="qcell hs">' + esc(row.hs) + sup(row.hsSrc) + '</div></div></div>';
-        }).join('') + '</div>';
+    var rows = quads.reduce(function (a, q) { return a.concat(q.rows); }, []);
+    var nx = rows.filter(function (x) { return x.hsMark === 'x'; }).length;
+    var nw = rows.length - nx;
+
+    if (!op.scored) {
+      op.scored = true;
+      $('op-score').innerHTML =
+        '<div class="sc-side sf"><div class="ring"><svg viewBox="0 0 36 36"><circle class="bg" cx="18" cy="18" r="15.9155"/><circle class="fg" cx="18" cy="18" r="15.9155" pathLength="100"/></svg><b>' + rows.length + '/' + rows.length + '</b></div>' +
+        '<div><div class="sc-who">Salesforce + SMBHD</div><div class="sc-big">Covers all ' + rows.length + ' areas</div><div class="sc-sub">Inside the fixed fee or the contract terms</div></div></div>' +
+        '<div class="sc-vs" aria-hidden="true">VS</div>' +
+        '<div class="sc-side hs"><div class="sc-who">HubSpot + RevOps HQ</div>' +
+        '<div class="sc-counts"><span class="x">' + mark('x') + '<em>' + nx + '</em> not included</span><span class="w">' + mark('warn') + '<em>' + nw + '</em> limited or extra cost</span></div>' +
+        '<div class="sc-bar"><i class="x" style="--w:' + (nx / rows.length * 100).toFixed(1) + '%"></i><i class="w" style="--w:' + (nw / rows.length * 100).toFixed(1) + '%"></i></div></div>';
+      $('op-legend').innerHTML = ['ok', 'x', 'warn'].map(function (k) { return '<span>' + mark(k) + MARK_LABEL[k] + '</span>'; }).join('');
+    }
+
+    $('op-tabs').innerHTML = quads.map(function (q, i) {
+      var dots = function (kinds) { return '<span class="dots">' + kinds.map(function (k) { return '<i class="' + k + '"></i>'; }).join('') + '</span>'; };
+      return '<button class="op-tab" type="button" role="tab" id="op-tab-' + i + '" aria-selected="' + (i === op.tab) + '" tabindex="' + (i === op.tab ? 0 : -1) + '" data-i="' + i + '">' +
+        '<span class="t-top"><span class="t-num">' + (i + 1) + '</span>' + q.title + '</span>' +
+        '<span class="t-dots"><span>SF</span>' + dots(q.rows.map(function () { return 'ok'; })) +
+        '<span>HS</span>' + dots(q.rows.map(function (x) { return x.hsMark; })) + '</span></button>';
     }).join('');
-    $('band').innerHTML = '<div><div class="b-label">Over the 36-month term</div><div class="b-big">Salesforce saves ' + money(r.threeYear.savings) + '</div></div>' +
-      '<div class="b-cell"><div class="b-who">Salesforce + SMBHD, ' + esc(r.option.short) + '</div><div class="b-amt">' + money(r.threeYear.sf) + '</div></div>' +
-      '<div class="b-cell"><div class="b-who">HubSpot + RevOps HQ, at list</div><div class="b-amt">' + money(r.threeYear.hs) + '</div></div>';
+
+    var q = quads[op.tab];
+    var panel = $('op-panel');
+    panel.setAttribute('aria-labelledby', 'op-tab-' + op.tab);
+    panel.innerHTML =
+      '<div class="op-cols"><span></span><span class="c-sf"><img src="assets/salesforce-logo.svg" alt="">Salesforce + SMBHD</span><span class="c-hs">HubSpot + RevOps HQ</span><span></span></div>' +
+      q.rows.map(function (row, i) {
+        var key = q.title + '|' + row.topic, open = op.all || op.open[key];
+        return '<div class="op-row' + (open ? ' open' : '') + '" style="--i:' + i + '" data-k="' + esc(key) + '">' +
+          '<button class="op-line" type="button" aria-expanded="' + !!open + '">' +
+            '<span class="op-topic">' + esc(row.topic) + pendingTag(row.confirm) + '</span>' +
+            '<span class="op-v sf">' + mark('ok') + '<span>' + esc(row.sfHead) + '</span></span>' +
+            '<span class="op-v hs">' + mark(row.hsMark) + '<span>' + esc(row.hsHead) + '</span></span>' + CHEV +
+          '</button>' +
+          '<div class="op-detail"><div><div class="d-grid"><span class="d-src">Detail and source</span>' +
+            '<p class="sf">' + esc(row.sf) + sup(row.sfSrc) + '</p><p class="hs">' + esc(row.hs) + sup(row.hsSrc) + '</p><span></span></div></div></div>' +
+        '</div>';
+      }).join('');
+    $('op-more').textContent = op.all ? 'Hide details' : 'Show all details';
+
+    panel.classList.remove('anim');
+    if (animate && !REDUCED) { void panel.offsetWidth; panel.classList.add('anim'); }
+    paintBand(r);
+  }
+
+  function paintBand(r) {
+    var sfPct = r.threeYear.sf / r.threeYear.hs * 100;
+    $('b-sf-who').textContent = 'Salesforce + SMBHD, ' + r.option.short;
+    if (op.bandSeen) {
+      countTo('bandSav', $('b-sav'), r.threeYear.savings, money);
+      countTo('bandSf', $('b-sf'), r.threeYear.sf, money);
+      countTo('bandHs', $('b-hs'), r.threeYear.hs, money);
+      $('b-sf-bar').style.width = sfPct.toFixed(1) + '%';
+      $('b-hs-bar').style.width = '100%';
+    } else {
+      shown.bandSav = 0; shown.bandSf = 0; shown.bandHs = 0;
+      $('b-sav').textContent = money(r.threeYear.savings);
+      $('b-sf').textContent = money(r.threeYear.sf);
+      $('b-hs').textContent = money(r.threeYear.hs);
+    }
+  }
+
+  function selectTab(i, focus) {
+    op.tab = (i + 4) % 4;
+    renderOnePager(lastResult, true);
+    if (focus) $('op-tab-' + op.tab).focus();
+  }
+  $('op-tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('.op-tab');
+    if (b) selectTab(+b.getAttribute('data-i'));
+  });
+  $('op-tabs').addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); selectTab(op.tab + 1, true); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); selectTab(op.tab - 1, true); }
+  });
+  $('op-panel').addEventListener('click', function (e) {
+    var line = e.target.closest('.op-line');
+    if (!line) return;
+    var row = line.parentNode, key = row.getAttribute('data-k');
+    var open = !row.classList.contains('open');
+    op.open[key] = open;
+    if (!open && op.all) { op.all = false; $('op-more').textContent = 'Show all details'; }
+    row.classList.toggle('open', open);
+    line.setAttribute('aria-expanded', String(open));
+  });
+  $('op-more').addEventListener('click', function () {
+    op.all = !op.all;
+    if (!op.all) op.open = {};
+    renderOnePager(lastResult, false);
+  });
+  function watchOnePager() {
+    var startPanel = function () { if (!op.seen) { op.seen = true; renderOnePager(lastResult, true); } };
+    var startBand = function () { if (!op.bandSeen) { op.bandSeen = true; paintBand(lastResult); } };
+    if (REDUCED || !('IntersectionObserver' in window)) { startPanel(); startBand(); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        if (en.target.id === 'band') startBand(); else startPanel();
+      });
+    }, { threshold: .25 });
+    io.observe($('op-card'));
+    io.observe($('band'));
   }
 
   /* ── PDF export ── */
@@ -463,4 +585,5 @@
   update();
   markPending();
   initReveal();
+  watchOnePager();
 })();
