@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>What the Scope Leaves Out · USG Water Solutions × Salesforce</title>
+<link rel="icon" href="assets/salesforce-logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/poster.jpg">
+<style>
+  :root {
+    --bh: 64px;
+    --navy: #0A1B3F;
+    --navy-2: #12285E;
+    --indigo: #1D2F7A;
+    --sky: #1FA2FF;
+    --sf: #0176D3;
+    --usg-blue: #2491EB;
+    --usg-dark: #165EA0;
+    --usg-green: #72BF44;
+    --lime: #C5E043;
+    --orange: #F26641;
+    --hs: #B5707B;
+    --hs-soft: #FBF1F2;
+    --hs-line: #EFD6DA;
+    --ink: #0F172A;
+    --ink-2: #334155;
+    --muted: #5B6478;
+    --line: #E3E8F0;
+    --bg: #F4F7FB;
+    --card: #FFFFFF;
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 8px 24px rgba(15, 23, 42, .06);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: var(--bh); }
+  body { margin: 0; font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  sup.src a { font-size: 10px; font-weight: 700; color: var(--usg-dark); text-decoration: none; margin-left: 2px; }
+
+  /* ── Banner ── */
+  .banner {
+    position: sticky; top: 0; z-index: 50; height: var(--bh);
+    display: flex; align-items: center; gap: 20px; padding: 0 24px;
+    background: rgba(10, 27, 63, .94); backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255, 255, 255, .08); color: #fff;
+  }
+  .banner::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: linear-gradient(90deg, var(--usg-blue), var(--sky) 45%, var(--lime)); opacity: .9; }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; flex-shrink: 0; }
+  .brand .logo-usg { height: 34px; }
+  .brand .logo-sf { height: 28px; }
+  .brand .sep { width: 1px; height: 26px; background: rgba(255, 255, 255, .25); }
+  .banner-title { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+  .banner-title strong { font-size: 15px; font-weight: 800; letter-spacing: -.01em; white-space: nowrap; }
+  .banner-title span { font-size: 11.5px; color: rgba(255, 255, 255, .62); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .banner-links { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .draft-pill { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); background: var(--lime); padding: 5px 10px; border-radius: 99px; }
+  .lnk-main { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, .82); text-decoration: none; padding: 8px 12px; border-radius: 9px; transition: background .2s, color .2s; white-space: nowrap; }
+  .lnk-main:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+  .btn-cta { font-size: 13px; font-weight: 800; color: #fff; text-decoration: none; padding: 9px 16px; border-radius: 10px; white-space: nowrap; background: linear-gradient(135deg, var(--orange), #FF8A5B); box-shadow: 0 6px 18px rgba(242, 102, 65, .35); transition: transform .2s, box-shadow .2s; }
+  .btn-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(242, 102, 65, .45); }
+
+  /* ── Video stage: full player visible on load ── */
+  .stage {
+    min-height: calc(100vh - var(--bh)); min-height: calc(100svh - var(--bh));
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    padding: 18px 24px 14px; color: #fff; position: relative; overflow: hidden;
+    background: radial-gradient(1200px 520px at 50% 115%, rgba(31, 162, 255, .28), transparent 70%),
+                radial-gradient(900px 500px at 10% -10%, rgba(114, 191, 68, .14), transparent 70%),
+                linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 60%, var(--indigo) 100%);
+  }
+  .video-frame {
+    width: min(1280px, 100%, calc((100svh - var(--bh) - 82px) * 16 / 9));
+    aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; position: relative;
+    background: #000 url('assets/poster.jpg') center / cover no-repeat;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .1);
+  }
+  .video-frame video { width: 100%; height: 100%; display: block; object-fit: cover; background: transparent; }
+  .cue { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, .85); text-decoration: none; padding: 8px 16px; border-radius: 99px; border: 1px solid rgba(255, 255, 255, .18); background: rgba(255, 255, 255, .06); transition: all .3s; }
+  .cue svg { animation: bob 2.2s ease-in-out infinite; }
+  .cue:hover, .cue.lit { background: var(--lime); color: var(--navy); border-color: var(--lime); }
+  .cue.lit { box-shadow: 0 0 0 6px rgba(197, 224, 67, .2); }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+  /* ── Sections ── */
+  section.block { padding: 72px 0; }
+  .sec-head { max-width: 780px; margin-bottom: 28px; }
+  .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--usg-dark); margin: 0 0 10px; }
+  .sec-head h2 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.1; letter-spacing: -.025em; margin: 0 0 12px; font-weight: 900; }
+  .lede { font-size: 16.5px; line-height: 1.6; color: var(--ink-2); margin: 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ── Calculator ── */
+  .calc-grid { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: start; }
+  .controls { padding: 22px; position: sticky; top: calc(var(--bh) + 16px); }
+  .ctl { margin-bottom: 18px; }
+  .ctl-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin-bottom: 8px; }
+  .ctl-label output { font-size: 13px; font-weight: 800; color: var(--ink); }
+  .ctl-hint { font-size: 11.5px; line-height: 1.45; color: var(--muted); margin: 6px 0 0; }
+  .ctl-group { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--hs); margin: 22px 0 12px; padding-top: 18px; border-top: 1px dashed var(--line); }
+  .seg { display: flex; background: #EEF2F8; border-radius: 11px; padding: 3px; gap: 3px; }
+  .seg button { flex: 1; border: 0; background: transparent; padding: 8px 6px; border-radius: 9px; font-size: 12.5px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all .2s; line-height: 1.25; }
+  .seg button small { display: block; font-size: 10.5px; font-weight: 600; opacity: .8; }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: #fff; color: var(--usg-dark); box-shadow: 0 1px 3px rgba(15, 23, 42, .12); }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 99px; background: linear-gradient(90deg, var(--hs) var(--fill, 0%), #E6EAF1 var(--fill, 0%)); outline: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid var(--hs); box-shadow: 0 2px 6px rgba(0, 0, 0, .15); transition: transform .15s; }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.12); }
+  input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3px solid var(--hs); }
+  .switch { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 11px; border: 1px solid var(--line); margin-bottom: 8px; cursor: pointer; transition: border-color .2s, background .2s; }
+  .switch:hover { border-color: var(--hs-line); }
+  .switch input { position: absolute; opacity: 0; pointer-events: none; }
+  .switch .knob { flex-shrink: 0; width: 34px; height: 20px; border-radius: 99px; background: #DCE2EC; position: relative; transition: background .2s; margin-top: 1px; }
+  .switch .knob::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .2); transition: transform .2s; }
+  .switch input:checked + .knob { background: var(--hs); }
+  .switch input:checked + .knob::after { transform: translateX(14px); }
+  .switch input:focus-visible + .knob { outline: 2px solid var(--usg-blue); outline-offset: 2px; }
+  .switch.on { background: var(--hs-soft); border-color: var(--hs-line); }
+  .switch .sw-text { font-size: 12.5px; font-weight: 600; line-height: 1.35; }
+  .switch .sw-text small { display: block; font-size: 11px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+  details.assume { margin-top: 14px; font-size: 12px; color: var(--ink-2); }
+  details.assume summary { cursor: pointer; font-weight: 700; color: var(--usg-dark); }
+  details.assume ul { margin: 8px 0 0; padding-left: 18px; line-height: 1.55; }
+  .quote-btn { display: block; margin-top: 18px; text-align: center; font-size: 13px; font-weight: 800; text-decoration: none; color: var(--usg-dark); padding: 12px; border-radius: 12px; border: 1.5px dashed rgba(22, 94, 160, .35); transition: all .2s; }
+  .quote-btn:hover { background: #EAF4FE; border-style: solid; }
+
+  .results { display: grid; gap: 20px; min-width: 0; }
+  .savings { padding: 26px 28px; color: #fff; border: 0; background: radial-gradient(600px 240px at 100% 0%, rgba(197, 224, 67, .22), transparent 60%), linear-gradient(135deg, var(--navy) 0%, var(--usg-dark) 100%); display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; align-items: center; }
+  .sv-label { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .04em; color: rgba(255, 255, 255, .72); text-transform: uppercase; }
+  .sv-num { margin: 4px 0 2px; font-size: clamp(40px, 5vw, 58px); font-weight: 900; letter-spacing: -.035em; color: var(--lime); line-height: 1; font-variant-numeric: tabular-nums; }
+  .sv-sub { margin: 0; font-size: 13.5px; color: rgba(255, 255, 255, .78); line-height: 1.45; }
+  .totals { display: grid; gap: 10px; }
+  .tot { border-radius: 12px; padding: 12px 14px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .12); }
+  .tot .who { font-size: 11.5px; font-weight: 700; color: rgba(255, 255, 255, .7); }
+  .tot .amt { font-size: 22px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tot.sf { border-color: rgba(31, 162, 255, .5); background: rgba(31, 162, 255, .14); }
+  .tot .meter { height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .1); margin-top: 8px; overflow: hidden; }
+  .tot .meter i { display: block; height: 100%; border-radius: 99px; transition: width .7s cubic-bezier(.2, .8, .2, 1); }
+  .tot.sf .meter i { background: var(--sky); }
+  .tot.hs .meter i { background: #E3A0AA; }
+
+  .chart-card { padding: 20px 22px 12px; position: relative; }
+  .chart-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .chart-head h3, .renewal h3, .breakdown h3 { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+  .legend { display: flex; gap: 14px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 18px; height: 4px; border-radius: 99px; display: inline-block; }
+  #chart { width: 100%; height: auto; display: block; overflow: visible; }
+  #chart .grid line { stroke: #E9EDF4; }
+  #chart .grid text, #chart .xaxis text { font-size: 11px; fill: var(--muted); font-weight: 600; }
+  #chart .hit { fill: transparent; cursor: crosshair; }
+  #chart .guide { stroke: rgba(15, 23, 42, .18); stroke-dasharray: 3 4; opacity: 0; transition: opacity .15s; }
+  .tip { position: absolute; pointer-events: none; background: var(--navy); color: #fff; border-radius: 10px; padding: 10px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); opacity: 0; transform: translateY(4px); transition: opacity .15s, transform .15s; white-space: nowrap; z-index: 2; }
+  .tip.show { opacity: 1; transform: none; }
+  .tip b { font-variant-numeric: tabular-nums; }
+  .tip .gap { color: var(--lime); font-weight: 800; }
+  .chart-note { font-size: 11.5px; color: var(--muted); margin: 4px 0 0; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .renewal, .breakdown { padding: 20px 22px; }
+  .rn-row { display: grid; grid-template-columns: 92px 1fr; gap: 2px 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .rn-row:last-of-type { border-bottom: 0; }
+  .rn-row .who { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+  .rn-row.sf .who { color: var(--sf); }
+  .rn-row.hs .who { color: var(--hs); }
+  .rn-row strong { font-size: 22px; font-weight: 900; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .rn-row .note { grid-column: 2; font-size: 12px; color: var(--muted); line-height: 1.45; }
+  .rn-intro { font-size: 12.5px; color: var(--muted); margin: 6px 0 4px; line-height: 1.5; }
+  .bd-tabs { display: flex; gap: 6px; margin: 10px 0 8px; }
+  .bd-tabs button { border: 1px solid var(--line); background: #fff; border-radius: 99px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; }
+  .bd-tabs button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .bd-group { font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 12px 0 4px; }
+  .bd-line { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 6px 0; border-bottom: 1px dashed var(--line); animation: fadeIn .35s ease both; }
+  .bd-line span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bd-line.sep span:last-child { color: var(--hs); }
+  .bd-empty { font-size: 12.5px; color: var(--usg-green); font-weight: 700; padding: 6px 0; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: none; } }
+
+  /* ── One-pager ── */
+  .onepager { background: #fff; border-top: 1px solid var(--line); }
+  .op-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 26px; }
+  .op-head .sec-head { margin-bottom: 0; }
+  .pdf-btn { display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer; font-size: 14px; font-weight: 800; color: #fff; padding: 12px 18px; border-radius: 12px; background: linear-gradient(135deg, var(--usg-dark), var(--sf)); box-shadow: 0 8px 20px rgba(1, 118, 211, .3); transition: transform .2s; }
+  .pdf-btn:hover { transform: translateY(-1px); }
+  .quad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .quad { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fff; }
+  .quad-h { display: flex; align-items: center; gap: 10px; padding: 14px 18px; background: linear-gradient(90deg, #F1F6FD, #fff); border-bottom: 1px solid var(--line); }
+  .quad-h .num { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 900; color: #fff; background: var(--usg-dark); }
+  .quad-h h3 { margin: 0; font-size: 16px; font-weight: 800; }
+  .qcols { display: grid; grid-template-columns: 1fr 1fr; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 10px 18px 0; gap: 14px; }
+  .qcols span:first-child { color: var(--sf); }
+  .qcols span:last-child { color: var(--hs); }
+  .qrow { padding: 12px 18px; border-top: 1px solid #F0F3F8; }
+  .qrow:first-of-type { border-top: 0; }
+  .qtopic { font-size: 12px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+  .qcells { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .qcell { font-size: 12.5px; line-height: 1.5; color: var(--ink-2); padding-left: 10px; border-left: 3px solid; }
+  .qcell.sf { border-color: var(--sky); }
+  .qcell.hs { border-color: var(--hs-line); color: #5B4A4E; }
+  .pending { display: inline-block; font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); background: var(--lime); border-radius: 4px; padding: 1px 5px; margin-left: 4px; vertical-align: 1px; }
+  .band { margin-top: 18px; border-radius: var(--radius); padding: 20px 24px; display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 18px; align-items: center; color: #fff; background: linear-gradient(135deg, var(--navy), var(--indigo)); }
+  .band .b-label { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--lime); }
+  .band .b-big { font-size: 26px; font-weight: 900; letter-spacing: -.02em; margin-top: 2px; }
+  .band .b-cell { border-left: 1px solid rgba(255, 255, 255, .15); padding-left: 18px; }
+  .band .b-who { font-size: 12px; color: rgba(255, 255, 255, .7); font-weight: 600; }
+  .band .b-amt { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  /* ── Footer ── */
+  footer { background: var(--navy); color: rgba(255, 255, 255, .78); padding: 56px 0 36px; }
+  .foot-cta { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding-bottom: 32px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
+  .foot-cta h3 { margin: 0 0 6px; color: #fff; font-size: 24px; font-weight: 900; letter-spacing: -.02em; }
+  .foot-cta p { margin: 0; font-size: 14.5px; max-width: 560px; line-height: 1.55; }
+  .foot-links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .sources { margin: 28px 0 0; padding-left: 20px; font-size: 12px; line-height: 1.6; color: rgba(255, 255, 255, .6); columns: 2; column-gap: 40px; }
+  .sources li { break-inside: avoid; margin-bottom: 6px; }
+  .sources li:target { color: var(--lime); }
+  .conf { margin: 24px 0 0; font-size: 11.5px; color: rgba(255, 255, 255, .45); }
+
+  /* ── Responsive ── */
+  @media (max-width: 1080px) {
+    .calc-grid { grid-template-columns: 1fr; }
+    .controls { position: static; }
+    .banner-title span { display: none; }
+  }
+  @media (max-width: 860px) {
+    .quad-grid, .row2 { grid-template-columns: 1fr; }
+    .savings { grid-template-columns: 1fr; }
+    .band { grid-template-columns: 1fr; }
+    .band .b-cell { border-left: 0; padding-left: 0; }
+    .sources { columns: 1; }
+    .banner-title { display: none; }
+  }
+  @media (max-width: 640px) {
+    :root { --bh: 58px; }
+    .banner { padding: 0 14px; gap: 10px; }
+    .brand .logo-usg { height: 28px; }
+    .brand .logo-sf { height: 22px; }
+    .lnk-main .lnk-long { display: none; }
+    .lnk-main { font-size: 12px; }
+    .btn-cta { padding: 8px 12px; font-size: 12px; }
+    .btn-cta .cta-long { display: none; }
+    .draft-pill { display: none; }
+    .stage { min-height: auto; padding: 14px 12px 18px; }
+    .video-frame { width: 100%; border-radius: 12px; }
+    .qcells { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="banner">
+  <a class="brand" href="https://edalton122.github.io/usg-water-salesforce-revenue-engine/" aria-label="USG Water Solutions and Salesforce: back to the USG Water microsite">
+    <img class="logo-usg" src="assets/usg-water-logo-white.png" alt="USG Water Solutions">
+    <span class="sep" aria-hidden="true"></span>
+    <img class="logo-sf" src="assets/salesforce-logo.svg" alt="Salesforce">
+  </a>
+  <div class="banner-title">
+    <strong>What the Scope Leaves Out</strong>
+    <span>Salesforce + SMBHD and HubSpot + RevOps HQ, side by side</span>
+  </div>
+  <nav class="banner-links" aria-label="Site links">
+    <span class="draft-pill" id="draft-pill" hidden title="Figures are pending final confirmation">Draft · pending confirmation</span>
+    <a class="lnk-main" href="https://edalton122.github.io/usg-water-salesforce-revenue-engine/">&larr; <span class="lnk-long">USG Water </span>microsite</a>
+    <a class="btn-cta" href="https://edalton122.github.io/usg-water-salesforce-revenue-engine/team.html" target="_blank" rel="noopener">Contact <span class="cta-long">your Salesforce </span>team</a>
+  </nav>
+</header>
+
+<main>
+  <section class="stage" id="watch" aria-label="Video: What the Scope Leaves Out">
+    <div class="video-frame">
+      <video id="vid" controls playsinline preload="metadata" poster="assets/poster.jpg" aria-label="What the Scope Leaves Out, 5 minutes 20 seconds">
+        <source src="assets/usg-water-scope-gaps.mp4" type="video/mp4">
+      </video>
+    </div>
+    <a class="cue" id="cue" href="#numbers">Run the numbers
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </section>
+
+  <section class="block" id="numbers">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="eyebrow">Long-term ownership</p>
+        <h2>What USG pays, year by year</h2>
+        <p class="lede">Salesforce is shown at its contractual maximum. HubSpot is shown at its published list price, the ceiling its terms allow at renewal. Move the levers and test the scenarios that matter to USG.</p>
+      </div>
+
+      <div class="calc-grid">
+        <aside class="controls card reveal" aria-label="Calculator controls">
+          <div class="ctl">
+            <div class="ctl-label">Scenario</div>
+            <div class="seg" id="seg-preset" role="group" aria-label="Scenario preset"></div>
+          </div>
+          <div class="ctl">
+            <div class="ctl-label">Salesforce plan</div>
+            <div class="seg" id="seg-option" role="group" aria-label="Salesforce plan"></div>
+          </div>
+          <div class="ctl">
+            <div class="ctl-label">Horizon</div>
+            <div class="seg" id="seg-horizon" role="group" aria-label="Horizon"></div>
+            <p class="ctl-hint">Year 4 is the first renewal after the 36-month term.</p>
+          </div>
+
+          <h4 class="ctl-group">HubSpot variables</h4>
+          <div class="ctl">
+            <div class="ctl-label">RevOps HQ services estimate</div>
+            <div class="seg" id="seg-services" role="group" aria-label="RevOps HQ services estimate"></div>
+          </div>
+          <div class="ctl">
+            <label class="ctl-label" for="rng-overrun">Hours beyond the estimate <output id="out-overrun">0%</output></label>
+            <input type="range" id="rng-overrun">
+            <p class="ctl-hint">RevOps HQ: &ldquo;Estimates for budgeting; TCV is not a cap.&rdquo;<sup class="src"><a href="#s1">1</a></sup></p>
+          </div>
+          <div class="ctl">
+            <label class="ctl-label" for="rng-list">HubSpot list price change by renewal <output id="out-list">0%</output></label>
+            <input type="range" id="rng-list">
+            <p class="ctl-hint">HubSpot may renew &ldquo;up to our then-current list price.&rdquo;<sup class="src"><a href="#s5">5</a></sup></p>
+          </div>
+          <div class="ctl">
+            <div class="ctl-label">Work outside RevOps HQ&rsquo;s scope</div>
+            <div id="oos-list"></div>
+          </div>
+
+          <details class="assume">
+            <summary>Fixed assumptions</summary>
+            <ul id="assume-list"></ul>
+          </details>
+          <a class="quote-btn" href="https://edalton122.github.io/usg-water-salesforce-revenue-engine/team.html" target="_blank" rel="noopener">Have a HubSpot quote? We&rsquo;ll model it with you live &rarr;</a>
+        </aside>
+
+        <div class="results">
+          <div class="savings card reveal" aria-live="polite">
+            <div>
+              <p class="sv-label">Salesforce saves USG</p>
+              <p class="sv-num" id="sv-num">$0</p>
+              <p class="sv-sub" id="sv-sub"></p>
+            </div>
+            <div class="totals">
+              <div class="tot sf"><div class="who">Salesforce + SMBHD</div><div class="amt" id="tot-sf">$0</div><div class="meter"><i id="m-sf"></i></div></div>
+              <div class="tot hs"><div class="who">HubSpot + RevOps HQ, at list</div><div class="amt" id="tot-hs">$0</div><div class="meter"><i id="m-hs"></i></div></div>
+            </div>
+          </div>
+
+          <div class="card chart-card reveal">
+            <div class="chart-head">
+              <h3>Cumulative cost</h3>
+              <div class="legend"><span><i style="background:var(--sf)"></i>Salesforce + SMBHD</span><span><i style="background:var(--hs)"></i>HubSpot + RevOps HQ</span></div>
+            </div>
+            <svg id="chart" viewBox="0 0 720 290" role="img" aria-label="Cumulative cost by year"></svg>
+            <div class="tip" id="tip"></div>
+            <p class="chart-note">Hover a year for detail. Year 1 includes one-time implementation and onboarding.</p>
+          </div>
+
+          <div class="row2">
+            <div class="card renewal reveal">
+              <h3>At the first renewal (year 4)</h3>
+              <p class="rn-intro">What each vendor&rsquo;s paper allows after the 36-month term.</p>
+              <div class="rn-row sf"><span class="who">Salesforce</span><strong id="rn-sf">$0</strong><span class="note" data-confirm="renewal-clause">At most. Your first renewal is capped at 5%.<sup class="src"><a href="#s3">3</a></sup></span></div>
+              <div class="rn-row hs"><span class="who">HubSpot</span><strong id="rn-hs">$0</strong><span class="note">&ldquo;Upon renewal, we may increase your Subscription Fees up to our then-current list price.&rdquo;<sup class="src"><a href="#s5">5</a></sup></span></div>
+            </div>
+            <div class="card breakdown reveal">
+              <h3>What&rsquo;s in the number</h3>
+              <div class="bd-tabs" role="group" aria-label="Vendor">
+                <button type="button" data-v="sf" aria-pressed="true">Salesforce + SMBHD</button>
+                <button type="button" data-v="hs" aria-pressed="false">HubSpot + RevOps HQ</button>
+              </div>
+              <div id="bd-body"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block onepager" id="summary">
+    <div class="wrap">
+      <div class="op-head">
+        <div class="sec-head reveal">
+          <p class="eyebrow">The one-pager</p>
+          <h2>Salesforce and HubSpot, on level footing</h2>
+          <p class="lede">Functionality, integration, CapEx and OpEx, side by side. Dollar figures follow the scenario you set above.</p>
+        </div>
+        <button class="pdf-btn reveal" id="pdf-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Export one-pager (PDF)
+        </button>
+      </div>
+      <div class="quad-grid" id="quad-grid"></div>
+      <div class="band reveal" id="band"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h3>Want to walk through a scenario together?</h3>
+        <p>Your Salesforce team will model any scenario with you, including the HubSpot quote you received.</p>
+      </div>
+      <div class="foot-links">
+        <a class="lnk-main" href="https://edalton122.github.io/usg-water-salesforce-revenue-engine/" style="display:inline-block">&larr; Back to the USG Water microsite</a>
+        <a class="btn-cta" href="https://edalton122.github.io/usg-water-salesforce-revenue-engine/team.html" target="_blank" rel="noopener">Contact your Salesforce team</a>
+      </div>
+    </div>
+    <ol class="sources" id="sources"></ol>
+    <p class="conf">Prepared for USG Water Solutions · Confidential · Figures as of November 7, 2026. HubSpot prices are published list prices, before any discount.</p>
+  </div>
+</footer>
+
+<script src="data/pricing.js"></script>
+<script src="js/tco.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>
