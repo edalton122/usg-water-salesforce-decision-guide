@@ -61,7 +61,6 @@
   .banner-title strong { font-size: 15px; font-weight: 800; letter-spacing: -.01em; white-space: nowrap; }
   .banner-title span { font-size: 11.5px; color: rgba(255, 255, 255, .62); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .banner-links { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .draft-pill { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); background: var(--lime); padding: 5px 10px; border-radius: 99px; }
   .lnk-main { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, .82); text-decoration: none; padding: 8px 12px; border-radius: 9px; transition: background .2s, color .2s; white-space: nowrap; }
   .lnk-main:hover { background: rgba(255, 255, 255, .1); color: #fff; }
   .btn-cta { font-size: 13px; font-weight: 800; color: #fff; text-decoration: none; padding: 9px 16px; border-radius: 10px; white-space: nowrap; background: linear-gradient(135deg, var(--orange), #FF8A5B); box-shadow: 0 6px 18px rgba(242, 102, 65, .35); transition: transform .2s, box-shadow .2s; }
@@ -200,7 +199,6 @@
   .op-head .sec-head { margin-bottom: 0; }
   .pdf-btn { display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer; font-size: 14px; font-weight: 800; color: #fff; padding: 12px 18px; border-radius: 12px; background: linear-gradient(135deg, var(--usg-dark), var(--sf)); box-shadow: 0 8px 20px rgba(1, 118, 211, .3); transition: transform .2s; }
   .pdf-btn:hover { transform: translateY(-1px); }
-  .pending { display: inline-block; font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); background: var(--lime); border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
   :root { --ok: var(--sf); --ok-soft: #E8F3FD; --x: #B5566A; --x-soft: #FBEEF1; --warn: #C98A12; --warn-soft: #FFF5E0; }
 
   /* Scoreboard */
@@ -355,7 +353,6 @@
     .lnk-main { font-size: 12px; }
     .btn-cta { padding: 8px 12px; font-size: 12px; }
     .btn-cta .cta-long { display: none; }
-    .draft-pill { display: none; }
     .stage { min-height: auto; padding: 14px 12px 18px; }
     .video-frame { width: 100%; border-radius: 12px; }
     .sc-big { font-size: 19px; }
@@ -382,7 +379,6 @@
     <span>Salesforce + SMBHD and HubSpot + RevOps HQ, side by side</span>
   </div>
   <nav class="banner-links" aria-label="Site links">
-    <span class="draft-pill" id="draft-pill" hidden title="Figures are pending final confirmation">Draft · pending confirmation</span>
     <a class="lnk-main" href="https://edalton122.github.io/usg-water-salesforce-revenue-engine/">&larr; <span class="lnk-long">USG Water </span>microsite</a>
     <a class="btn-cta" href="https://edalton122.github.io/usg-water-salesforce-revenue-engine/team.html" target="_blank" rel="noopener">Contact <span class="cta-long">your Salesforce </span>team</a>
   </nav>
@@ -477,7 +473,7 @@
             <div class="card renewal reveal">
               <h3>At the first renewal (year 4)</h3>
               <p class="rn-intro">What each vendor&rsquo;s paper allows after the 36-month term.</p>
-              <div class="rn-row sf"><span class="who">Salesforce</span><strong id="rn-sf">$0</strong><span class="note" data-confirm="renewal-clause">At most. Your first renewal is capped at 5%.<sup class="src"><a href="#s3">3</a></sup></span></div>
+              <div class="rn-row sf"><span class="who">Salesforce</span><strong id="rn-sf">$0</strong><span class="note">At most. Your first renewal is capped at 5%.<sup class="src"><a href="#s3">3</a></sup></span></div>
               <div class="rn-row hs"><span class="who">HubSpot</span><strong id="rn-hs">$0</strong><span class="note">&ldquo;Upon renewal, we may increase your Subscription Fees up to our then-current list price.&rdquo;<sup class="src"><a href="#s5">5</a></sup></span></div>
             </div>
             <div class="card breakdown reveal">

@@ -4,7 +4,6 @@
   var computeTCO = window.USG_TCO.computeTCO;
   var sanitize = window.USG_TCO.sanitize;
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var DRAFT = !P.isConfirmed();
 
   var $ = function (id) { return document.getElementById(id); };
   var money = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
@@ -16,10 +15,6 @@
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var sup = function (src) {
     return src && src.length ? '<sup class="src">' + src.map(function (n) { return '<a href="#s' + n + '">' + n + '</a>'; }).join(',') + '</sup>' : '';
-  };
-  var pendingTag = function (ids) {
-    var open = (ids || []).filter(function (id) { return !P.isConfirmed([id]); });
-    return DRAFT && open.length ? '<span class="pending" title="Pending confirmation">Pending</span>' : '';
   };
   var ease = function (t) { return 1 - Math.pow(1 - t, 3); };
 
@@ -287,7 +282,7 @@
           sf: 'Change management with adoption reviews at 30, 60 and 90 days. Every role trained, pricing team included.', sfSrc: [2],
           hs: 'No change management workstream. 38 hours of training, none listed for the pricing team (p09).', hsSrc: [1] },
         { topic: 'Go-live', sfHead: 'Week 10', hsHead: 'Week 12, subject to IT availability', hsMark: 'warn',
-          sf: 'Week 10, then 30 days of support alongside your team.', sfSrc: [2], confirm: ['smbhd-sow'],
+          sf: 'Week 10, then 30 days of support alongside your team.', sfSrc: [2],
           hs: 'End of week 12 of a 16-week plan, about 4 months from kickoff, “subject to IT availability” (p10, p11).', hsSrc: [1] }
       ] },
       { title: 'Integration', rows: [
@@ -298,15 +293,15 @@
           sf: 'Live links use Oracle Integration Cloud, which USG already owns. No new middleware to buy.', sfSrc: [3],
           hs: 'RevOps Connect integration platform: $800 a month, billed separately from project hours (p07).', hsSrc: [1] },
         { topic: 'ERP change', sfHead: 'A mapping project, not a rebuild', hsHead: 'Re-point listed as out of scope', hsMark: 'x',
-          sf: 'ERP data reaches Salesforce through Snowflake, so an ERP change is a mapping project scoped with USG, not a CRM rebuild.', sfSrc: [3], confirm: ['erp-position'],
+          sf: 'ERP data reaches Salesforce through Snowflake, so an ERP change is a mapping project scoped with USG, not a CRM rebuild.', sfSrc: [3],
           hs: 'Calls a NetSuite cutover “a re-point, not a rebuild” (p07), then lists “NetSuite integration or re-pointing at cutover” as out of scope (p11).', hsSrc: [1] }
       ] },
       { title: 'CapEx', rows: [
         { topic: 'Implementation', sfHead: money(opt.implementation) + ' fixed fee', hsHead: short(hs.services.low) + ' to ' + short(hs.services.high) + ' estimate, not a cap', hsMark: 'warn',
-          sf: money(opt.implementation) + ' fixed fee (' + opt.short + '), with migration from Oracle, training, change management and 30 days of support included.', sfSrc: [2], confirm: ['smbhd-sow'],
+          sf: money(opt.implementation) + ' fixed fee (' + opt.short + '), with migration from Oracle, training, change management and 30 days of support included.', sfSrc: [2],
           hs: money(hs.services.low) + ' to ' + money(hs.services.high) + ' estimate, time and materials at $250 an hour: “Estimates for budgeting; TCV is not a cap.” Added scope goes through a written change order (p04, p11).', hsSrc: [1] },
         { topic: 'One-time license fees', sfHead: 'No onboarding fees', hsHead: money(onboard) + ' required onboarding', hsMark: 'warn',
-          sf: 'No onboarding fees in the Salesforce proposal.', sfSrc: [3], confirm: ['sf-quotes'],
+          sf: 'No onboarding fees in the Salesforce proposal.', sfSrc: [3],
           hs: money(onboard) + ' in required HubSpot onboarding for Sales, Service and Marketing Hub Enterprise.', hsSrc: [4] },
         { topic: 'Scope', sfHead: opt.keepsHubSpotMarketing ? 'One fixed fee, marketing stays in HubSpot' : 'Everything above, one fixed fee', hsHead: 'Approvals, ERP re-point, marketing excluded', hsMark: 'x',
           sf: opt.keepsHubSpotMarketing ? 'Sales, Service and Data 360 under one fixed fee. Forms and campaigns stay in HubSpot.' : 'Sales, Service, Data 360 and Marketing Cloud under one fixed fee.', sfSrc: [2],
@@ -316,13 +311,13 @@
         { topic: 'Every year of the term', sfHead: money(sfYear) + ' a year, flat', hsHead: money(r.opex.hs) + ' a year at list', hsMark: 'warn',
           sf: opt.keepsHubSpotMarketing
             ? money(opt.annual) + ' a year for Salesforce, the same each year of the 36-month term, plus ' + money(P.salesforce.hubspotMarketingProAnnual) + ' a year at list to keep HubSpot Marketing Hub Professional.'
-            : money(opt.annual) + ' a year, the same in each year of the 36-month term.', sfSrc: opt.keepsHubSpotMarketing ? [3, 4] : [3], confirm: ['sf-quotes'],
+            : money(opt.annual) + ' a year, the same in each year of the 36-month term.', sfSrc: opt.keepsHubSpotMarketing ? [3, 4] : [3],
           hs: money(r.opex.hs) + ' a year at list: four Enterprise hubs (' + money(lic) + ') plus RevOps Connect (' + money(hs.middlewareAnnual) + ').', hsSrc: [1, 4] },
         { topic: 'At renewal', sfHead: 'Capped at 5%', hsHead: 'Up to then-current list price', hsMark: 'warn',
-          sf: 'First renewal capped at 5%: at most ' + money(r.opex.sfRenewal) + ' in year 4.', sfSrc: [3], confirm: ['renewal-clause'],
+          sf: 'First renewal capped at 5%: at most ' + money(r.opex.sfRenewal) + ' in year 4.', sfSrc: [3],
           hs: '“Upon renewal, we may increase your Subscription Fees up to our then-current list price.” With a ' + r.inputs.listChangePct + '% list change: ' + money(r.opex.hsRenewal) + ' in year 4.', hsSrc: [5] },
         { topic: 'During the term', sfHead: 'Swap licenses as needs change', hsHead: 'No downgrades until renewal', hsMark: 'x',
-          sf: 'License swap clause: USG can exchange licenses as its needs change.', sfSrc: [3], confirm: ['renewal-clause'],
+          sf: 'License swap clause: USG can exchange licenses as its needs change.', sfSrc: [3],
           hs: '“You are not permitted to downgrade your Subscription Service during your Current Term.” Marketing contact tiers can’t be downgraded until renewal.', hsSrc: [4, 5] }
       ] }
     ];
@@ -374,7 +369,7 @@
         var key = q.title + '|' + row.topic, open = op.all || op.open[key];
         return '<div class="op-row' + (open ? ' open' : '') + '" style="--i:' + i + '" data-k="' + esc(key) + '">' +
           '<button class="op-line" type="button" aria-expanded="' + !!open + '">' +
-            '<span class="op-topic">' + esc(row.topic) + pendingTag(row.confirm) + '</span>' +
+            '<span class="op-topic">' + esc(row.topic) + '</span>' +
             '<span class="op-v sf">' + mark('ok') + '<span>' + esc(row.sfHead) + '</span></span>' +
             '<span class="op-v hs">' + mark(row.hsMark) + '<span>' + esc(row.hsHead) + '</span></span>' + CHEV +
           '</button>' +
@@ -491,7 +486,7 @@
           q.rows.forEach(function (row) {
             doc.setFontSize(fs);
             doc.setFont('helvetica', 'bold');
-            var t = doc.splitTextToSize(row.topic + (DRAFT && row.confirm && !P.isConfirmed(row.confirm) ? ' (pending)' : ''), cw[0] - 8);
+            var t = doc.splitTextToSize(row.topic, cw[0] - 8);
             doc.setFont('helvetica', 'normal');
             var a = doc.splitTextToSize(row.sf + refs(row.sfSrc), cw[1] - 12);
             var b = doc.splitTextToSize(row.hs + refs(row.hsSrc), cw[2] - 4);
@@ -544,26 +539,13 @@
       doc.text(doc.splitTextToSize(foot, W - 2 * M), M, by + 64);
       doc.text('Prepared for USG Water Solutions · Confidential · Figures as of November 7, 2026.', M, H - 22);
 
-      if (DRAFT) {
-        doc.setTextColor(226, 232, 240); doc.setFont('helvetica', 'bold'); doc.setFontSize(84);
-        doc.text('DRAFT', W / 2, H / 2 + 40, { align: 'center', angle: 32 });
-      }
       doc.save('USG-Water_Salesforce-vs-HubSpot_One-Pager.pdf');
     });
   }
 
-  /* ── Sources, draft state, video, reveal ── */
+  /* ── Sources, video, reveal ── */
   function renderSources() {
     $('sources').innerHTML = P.sources.map(function (s) { return '<li id="s' + s.n + '">' + esc(s.text) + '</li>'; }).join('');
-  }
-
-  function markPending() {
-    if (!DRAFT) return;
-    $('draft-pill').hidden = false;
-    document.querySelectorAll('[data-confirm]').forEach(function (n) {
-      var ids = n.getAttribute('data-confirm').split(',');
-      n.insertAdjacentHTML('beforeend', pendingTag(ids));
-    });
   }
 
   function initReveal() {
@@ -584,7 +566,6 @@
   renderControls();
   initChart();
   update();
-  markPending();
   initReveal();
   watchOnePager();
 })();

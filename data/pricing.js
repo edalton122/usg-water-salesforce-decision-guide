@@ -7,20 +7,11 @@
 
   var SOURCES = [
     { n: 1, text: 'RevOps HQ, "USG Water Solutions: HubSpot Enterprise Implementation Proposal", October 2026. Page numbers are the printed footers.' },
-    { n: 2, text: 'SMBHD, "SMBHD + USG Water: Salesforce Implementation", draft dated October 27, 2026.' },
+    { n: 2, text: 'SMBHD, "SMBHD + USG Water: Salesforce Implementation", October 27, 2026.' },
     { n: 3, text: 'Salesforce proposal to USG Water Solutions (Option 1 and Option 2), October 28, 2026, and the Salesforce + SMBHD responses to USG\'s evaluation, November 2026.' },
     { n: 4, text: 'HubSpot Product and Services Catalog, products and pricing (legal.hubspot.com/hubspot-product-and-services-catalog), list prices, accessed November 7, 2026.' },
     { n: 5, text: 'HubSpot Customer Terms of Service, sections 2.5, 3.2 and 4.1 (legal.hubspot.com/terms-of-service), last modified September 16, 2026, accessed November 7, 2026.' },
     { n: 6, text: 'Hours for work outside RevOps HQ\'s scope are illustrative estimates on this page, priced at RevOps HQ\'s own $250 per hour rate. They are not quotes.' }
-  ];
-
-  var CONFIRMATIONS = [
-    { id: 'sf-quotes', confirmed: false },
-    { id: 'renewal-clause', confirmed: false },
-    { id: 'smbhd-sow', confirmed: false },
-    { id: 'erp-position', confirmed: false },
-    { id: 'video-rerender', confirmed: false },
-    { id: 'hubspot-list', confirmed: true, checked: '2026-11-07' }
   ];
 
   var HS_SEAT_MONTHLY = 150;
@@ -37,7 +28,6 @@
   var PRICING = {
     asOf: '2026-11-07',
     sources: SOURCES,
-    confirmations: CONFIRMATIONS,
 
     links: {
       mainSite: 'https://edalton122.github.io/usg-water-salesforce-revenue-engine/',
@@ -55,7 +45,6 @@
           annual: 156282,
           implementation: 125000,
           keepsHubSpotMarketing: false,
-          confirm: ['sf-quotes', 'smbhd-sow'],
           src: [2, 3]
         },
         opt1: {
@@ -64,7 +53,6 @@
           annual: 129870,
           implementation: 110000,
           keepsHubSpotMarketing: true,
-          confirm: ['sf-quotes', 'smbhd-sow'],
           src: [2, 3]
         }
       },
@@ -114,14 +102,6 @@
       expected: { label: 'Expected', option: 'opt2', horizon: 4, servicesEstimate: 'high', overrunPct: 10, listChangePct: 3, outOfScope: ['approvals', 'netsuite'] },
       growth: { label: 'Growth', option: 'opt2', horizon: 4, servicesEstimate: 'high', overrunPct: 20, listChangePct: 5, outOfScope: ['approvals', 'netsuite', 'marketing'] }
     }
-  };
-
-  PRICING.isConfirmed = function (ids) {
-    var list = ids || CONFIRMATIONS.map(function (c) { return c.id; });
-    return list.every(function (id) {
-      var c = CONFIRMATIONS.filter(function (x) { return x.id === id; })[0];
-      return !!(c && c.confirmed);
-    });
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = PRICING;
