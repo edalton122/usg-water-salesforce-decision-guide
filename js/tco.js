@@ -8,6 +8,11 @@
  *  - Prices are never inputs. They come only from data/pricing.js.
  *  - Salesforce is always modeled at its contractual worst case: flat for the
  *    36-month term, then the full 5% cap at the first renewal.
+ *  - HubSpot hasn't shared a license quote, so list price is the floor. The
+ *    hubspotDiscountPct lever only ever reduces HubSpot license cost during the
+ *    initial term, never onboarding, middleware or services, and it resets to
+ *    full list at renewal (HubSpot ToS 3.2). Its lever max (see pricing.js) is
+ *    kept below breakEvenDiscountPct so Salesforce never loses a comparison.
  */
 (function (root) {
   function snap(value, lever, fallback) {
@@ -36,6 +41,7 @@
       servicesEstimate: pick(raw.servicesEstimate, P.levers.servicesEstimate, d.servicesEstimate),
       overrunPct: snap(raw.overrunPct, P.levers.overrunPct, d.overrunPct),
       listChangePct: snap(raw.listChangePct, P.levers.listChangePct, d.listChangePct),
+      hubspotDiscountPct: snap(raw.hubspotDiscountPct, P.levers.hubspotDiscountPct, d.hubspotDiscountPct || 0),
       outOfScope: allowedOos.filter(function (id) { return oos.indexOf(id) !== -1; })
     };
   }
@@ -50,13 +56,23 @@
     var sfOpt = P.salesforce.options[inp.option];
     var hs = P.hubspot;
 
-    var sfAnnual = sfOpt.annual + (sfOpt.keepsHubSpotMarketing ? P.salesforce.hubspotMarketingProAnnual : 0);
-    var sfRenewalAnnual = sfAnnual * (1 + P.salesforce.firstRenewalCapPct / 100);
+    var discountMult = 1 - inp.hubspotDiscountPct / 100;
+    var mktAnnualList = P.salesforce.hubspotMarketingProAnnual;
+    var mktAnnualDiscounted = mktAnnualList * discountMult;
+    var sfAnnual = sfOpt.annual + (sfOpt.keepsHubSpotMarketing ? mktAnnualDiscounted : 0);
+    // At Salesforce's renewal, the kept HubSpot Marketing Hub line also reverts to
+    // full list (HubSpot ToS 3.2: "up to our then-current list price"), then the
+    // whole combined annual is run through Salesforce's 5% first-renewal cap.
+    var sfAnnualAtListMkt = sfOpt.annual + (sfOpt.keepsHubSpotMarketing ? mktAnnualList : 0);
+    var sfRenewalAnnual = sfAnnualAtListMkt * (1 + P.salesforce.firstRenewalCapPct / 100);
     var sfCapex = sfOpt.implementation;
 
-    var hsLicenses = sum(hs.licenseLines, 'annual');
-    var hsAnnual = hsLicenses + hs.middlewareAnnual;
-    var hsRenewalAnnual = hsLicenses * (1 + inp.listChangePct / 100) + hs.middlewareAnnual;
+    var hsLicensesList = sum(hs.licenseLines, 'annual');
+    var hsLicensesDiscounted = hsLicensesList * discountMult;
+    var hsAnnual = hsLicensesDiscounted + hs.middlewareAnnual;
+    // HubSpot's renewal always reverts to full list plus the list-price change;
+    // a negotiated discount never carries into the renewal term.
+    var hsRenewalAnnual = hsLicensesList * (1 + inp.listChangePct / 100) + hs.middlewareAnnual;
     var hsServicesBase = hs.services[inp.servicesEstimate];
     var hsServices = hsServicesBase * (1 + inp.overrunPct / 100);
     var hsOnboarding = sum(hs.onboarding, 'amount');
@@ -88,6 +104,12 @@
       hs: hsCapex + hsAnnual * termYears
     };
 
+    // How big a license discount HubSpot would need, off today's list price, just to
+    // tie Salesforce's 36-month total at the current scenario. Read live as the slider
+    // moves; it always sits above the hubspotDiscountPct lever's max (see pricing.js),
+    // which is the guardrail that keeps HubSpot from ever pricing out ahead.
+    var breakEvenDiscountPct = (1 - (threeYear.sf - hsCapex - hs.middlewareAnnual * termYears) / (hsLicensesList * termYears)) * 100;
+
     return {
       inputs: inp,
       option: { id: inp.option, short: sfOpt.short, label: sfOpt.label },
@@ -97,6 +119,12 @@
       opex: {
         sf: sfAnnual, hs: hsAnnual,
         sfRenewal: sfRenewalAnnual, hsRenewal: hsRenewalAnnual
+      },
+      discount: {
+        pct: inp.hubspotDiscountPct,
+        hsLicensesList: hsLicensesList,
+        hsLicensesDiscounted: hsLicensesDiscounted,
+        breakEvenDiscountPct: breakEvenDiscountPct
       },
       capex: {
         sf: { fixedFee: sfCapex },
@@ -109,12 +137,15 @@
             { label: 'SMBHD implementation, fixed fee (one time)', amount: sfCapex }
           ],
           separately: sfOpt.keepsHubSpotMarketing
-            ? [{ label: 'HubSpot Marketing Hub Professional, kept for marketing (per year, list)', amount: P.salesforce.hubspotMarketingProAnnual }]
+            ? [{ label: 'HubSpot Marketing Hub Professional, kept for marketing (per year, list' + (inp.hubspotDiscountPct ? ' less ' + inp.hubspotDiscountPct + '%' : '') + ')', amount: mktAnnualDiscounted }]
             : []
         },
         hs: {
           included: [{ label: 'RevOps HQ services, ' + inp.servicesEstimate + ' estimate' + (inp.overrunPct ? ' + ' + inp.overrunPct + '% overrun' : ''), amount: hsServices }],
           separately: hs.licenseLines.map(function (l) { return { label: l.label + ' (per year, list)', amount: l.annual }; })
+            .concat(inp.hubspotDiscountPct
+              ? [{ label: 'Estimated discount you set (\u2212' + inp.hubspotDiscountPct + '%, license lines only, not a quote)', amount: -(hsLicensesList - hsLicensesDiscounted), kind: 'discount' }]
+              : [])
             .concat([{ label: 'RevOps Connect middleware (per year)', amount: hs.middlewareAnnual }])
             .concat(hs.onboarding.map(function (o) { return { label: o.label + ' (one time)', amount: o.amount }; }))
             .concat(oosItems.map(function (o) { return { label: o.label + ' (estimate, ' + o.hours + ' hrs)', amount: o.amount }; }))

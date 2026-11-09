@@ -11,7 +11,8 @@
     { n: 3, text: 'Salesforce proposal to USG Water Solutions (Option 1 and Option 2), October 28, 2026, and the Salesforce + SMBHD responses to USG\'s evaluation, November 2026.' },
     { n: 4, text: 'HubSpot Product and Services Catalog, products and pricing (legal.hubspot.com/hubspot-product-and-services-catalog), list prices, accessed November 7, 2026.' },
     { n: 5, text: 'HubSpot Customer Terms of Service, sections 2.5, 3.2 and 4.1 (legal.hubspot.com/terms-of-service), last modified September 16, 2026, accessed November 7, 2026.' },
-    { n: 6, text: 'Hours for work outside RevOps HQ\'s scope are illustrative estimates on this page, priced at RevOps HQ\'s own $250 per hour rate. They are not quotes.' }
+    { n: 6, text: 'Hours for work outside RevOps HQ\'s scope are illustrative estimates on this page, priced at RevOps HQ\'s own $250 per hour rate. They are not quotes.' },
+    { n: 7, text: 'HubSpot has not shared a license quote with USG or Salesforce. License figures on this page use HubSpot\'s published list price (source 4). The discount slider lets you test what a negotiated price would need to look like.' }
   ];
 
   var HS_SEAT_MONTHLY = 150;
@@ -92,15 +93,19 @@
       horizon: [3, 4],
       servicesEstimate: ['low', 'high'],
       overrunPct: { min: 0, max: 50, step: 5 },
-      listChangePct: { min: 0, max: 5, step: 1 }
+      listChangePct: { min: 0, max: 5, step: 1 },
+      // HubSpot hasn't shared a license quote, so the site defaults to list price (0%).
+      // Capped well under the break-even discount (see breakEvenDiscountPct in js/tco.js)
+      // so no setting here can ever show HubSpot cheaper than Salesforce.
+      hubspotDiscountPct: { min: 0, max: 40, step: 5 }
     },
 
     defaults: { preset: 'expected' },
 
     presets: {
-      conservative: { label: 'Conservative', option: 'opt2', horizon: 3, servicesEstimate: 'low', overrunPct: 0, listChangePct: 0, outOfScope: [] },
-      expected: { label: 'Expected', option: 'opt2', horizon: 4, servicesEstimate: 'high', overrunPct: 10, listChangePct: 3, outOfScope: ['approvals', 'netsuite'] },
-      growth: { label: 'Growth', option: 'opt2', horizon: 4, servicesEstimate: 'high', overrunPct: 20, listChangePct: 5, outOfScope: ['approvals', 'netsuite', 'marketing'] }
+      conservative: { label: 'Conservative', option: 'opt2', horizon: 3, servicesEstimate: 'low', overrunPct: 0, listChangePct: 0, hubspotDiscountPct: 30, outOfScope: [] },
+      expected: { label: 'Expected', option: 'opt2', horizon: 4, servicesEstimate: 'high', overrunPct: 10, listChangePct: 3, hubspotDiscountPct: 0, outOfScope: ['approvals', 'netsuite'] },
+      growth: { label: 'Growth', option: 'opt2', horizon: 4, servicesEstimate: 'high', overrunPct: 20, listChangePct: 5, hubspotDiscountPct: 0, outOfScope: ['approvals', 'netsuite', 'marketing'] }
     }
   };
 

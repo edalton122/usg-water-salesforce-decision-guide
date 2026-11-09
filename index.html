@@ -118,6 +118,10 @@
   .ctl-label output { font-size: 13px; font-weight: 800; color: var(--ink); }
   .ctl-hint { font-size: 11.5px; line-height: 1.45; color: var(--muted); margin: 6px 0 0; }
   .ctl-group { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--hs); margin: 22px 0 12px; padding-top: 18px; border-top: 1px dashed var(--line); }
+  .ctl-note { font-size: 11.5px; line-height: 1.5; color: #6B5A5E; background: var(--hs-soft); border: 1px solid var(--hs-line); border-radius: 10px; padding: 9px 11px; margin: 0 0 16px; }
+  .ctl-note sup.src { color: var(--hs); }
+  .breakeven { font-size: 11.5px; line-height: 1.5; color: var(--muted); margin: 8px 0 0; padding: 8px 10px; border-radius: 9px; background: #F3F6FB; border: 1px dashed var(--line); }
+  .breakeven b { color: var(--ink); font-variant-numeric: tabular-nums; }
   .seg { display: flex; background: #EEF2F8; border-radius: 11px; padding: 3px; gap: 3px; }
   .seg button { flex: 1; border: 0; background: transparent; padding: 8px 6px; border-radius: 9px; font-size: 12.5px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all .2s; line-height: 1.25; }
   .seg button small { display: block; font-size: 10.5px; font-weight: 600; opacity: .8; }
@@ -190,6 +194,8 @@
   .bd-line { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 6px 0; border-bottom: 1px dashed var(--line); animation: fadeIn .35s ease both; }
   .bd-line span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .bd-line.sep span:last-child { color: var(--hs); }
+  .bd-line.disc span:last-child { color: var(--usg-green); }
+  .bd-line.disc span:first-child { font-style: italic; color: var(--muted); }
   .bd-empty { font-size: 12.5px; color: var(--usg-green); font-weight: 700; padding: 6px 0; }
   @keyframes fadeIn { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: none; } }
 
@@ -277,6 +283,19 @@
   .op-detail p { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--ink-2); padding: 0 12px; }
   .op-detail p.hs { color: #6B5A5E; }
   .op-detail .d-src { font-size: 11px; font-weight: 700; color: var(--muted); padding-left: 0; }
+  .op-note { margin: 10px 0 2px; padding: 10px 14px; border-radius: 12px; background: #F5F7FB; border: 1px dashed var(--line); font-size: 12.5px; line-height: 1.55; color: var(--ink-2); }
+  .op-chart { margin: 4px 0 14px; }
+  .hc-wrap { padding: 14px 16px 12px; border-radius: 14px; background: #FAFBFD; border: 1px solid var(--line); }
+  .hc-head { font-size: 11.5px; font-weight: 800; color: var(--muted); display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  .hc-src { font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--muted); }
+  .hc-bars { display: flex; flex-direction: column; gap: 9px; }
+  .hc-row { display: grid; grid-template-columns: 180px 1fr 72px; align-items: center; gap: 10px; }
+  .hc-label { font-size: 12px; font-weight: 700; color: var(--ink); }
+  .hc-track { position: relative; height: 13px; border-radius: 7px; background: #EDEFF4; overflow: hidden; }
+  .hc-fill { position: absolute; top: 0; bottom: 0; left: var(--l, 0%); width: var(--w, 0%); background: linear-gradient(90deg, #F2A7B4, #D9475F); border-radius: 7px; transition: left .7s cubic-bezier(.2, .8, .2, 1), width .7s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--i, 0) * 55ms); }
+  .hc-fill.none { left: 0; width: 100%; background: repeating-linear-gradient(135deg, #E3E6EC, #E3E6EC 6px, #F3F4F7 6px, #F3F4F7 12px); }
+  .hc-val { font-size: 11px; font-weight: 700; color: var(--muted); text-align: right; white-space: nowrap; }
+  .hc-row.no-hours .hc-label, .hc-row.no-hours .hc-val { color: #B23A4E; }
   .op-foot { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 22px 16px; border-top: 1px solid #EEF1F6; }
   .op-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; font-weight: 600; color: var(--muted); }
   .op-legend span { display: inline-flex; align-items: center; gap: 6px; }
@@ -343,6 +362,8 @@
     .op-detail p { padding: 0; }
     .sources { columns: 1; }
     .banner-title { display: none; }
+    .hc-row { grid-template-columns: 1fr; gap: 4px; }
+    .hc-val { text-align: left; }
   }
   @media (max-width: 640px) {
     :root { --bh: 58px; }
@@ -387,8 +408,8 @@
 <main>
   <section class="stage" id="watch" aria-label="Video: What the Scope Leaves Out">
     <div class="video-frame">
-      <video id="vid" controls playsinline preload="metadata" poster="assets/poster.jpg" aria-label="What the Scope Leaves Out, 5 minutes 20 seconds">
-        <source src="assets/usg-water-scope-gaps.mp4" type="video/mp4">
+      <video id="vid" controls playsinline preload="metadata" poster="assets/poster.jpg" aria-label="What the Scope Leaves Out, 6 minutes 15 seconds">
+        <source src="assets/usg-water-scope-gaps-v2.mp4" type="video/mp4">
       </video>
     </div>
     <a class="cue" id="cue" href="#numbers"><span class="cue-x cue-tag">Interactive</span>Run the numbers<span class="cue-x">&nbsp;yourself</span>
@@ -401,7 +422,7 @@
       <div class="sec-head reveal">
         <p class="eyebrow">Long-term ownership</p>
         <h2>What USG pays, year by year</h2>
-        <p class="lede">Salesforce is shown at its contractual maximum. HubSpot is shown at its published list price, the ceiling its terms allow at renewal. Move the levers and test the scenarios that matter to USG.</p>
+        <p class="lede">Salesforce is shown at its contractual maximum. HubSpot hasn&rsquo;t shared a license quote, so it starts at its published list price, the ceiling its terms allow at renewal. Move the levers, including a HubSpot discount you can test, to see the scenarios that matter to USG.</p>
       </div>
 
       <div class="calc-grid">
@@ -421,6 +442,13 @@
           </div>
 
           <h4 class="ctl-group">HubSpot variables</h4>
+          <p class="ctl-note">HubSpot hasn&rsquo;t shared a license quote with USG or Salesforce, so this starts at HubSpot&rsquo;s published list price.<sup class="src"><a href="#s7">7</a></sup> Test a negotiated price below.</p>
+          <div class="ctl">
+            <label class="ctl-label" for="rng-discount">Assume a HubSpot discount <output id="out-discount">0%</output></label>
+            <input type="range" id="rng-discount">
+            <p class="ctl-hint" id="hint-discount">License lines only. Not a quote, not onboarding, middleware or services.</p>
+            <p class="breakeven" id="breakeven-note"></p>
+          </div>
           <div class="ctl">
             <div class="ctl-label">RevOps HQ services estimate</div>
             <div class="seg" id="seg-services" role="group" aria-label="RevOps HQ services estimate"></div>
@@ -455,7 +483,7 @@
             </div>
             <div class="totals">
               <div class="tot sf"><div class="who">Salesforce + SMBHD</div><div class="amt" id="tot-sf">$0</div><div class="meter"><i id="m-sf"></i></div></div>
-              <div class="tot hs"><div class="who">HubSpot + RevOps HQ, at list</div><div class="amt" id="tot-hs">$0</div><div class="meter"><i id="m-hs"></i></div></div>
+              <div class="tot hs"><div class="who" id="tot-hs-who">HubSpot + RevOps HQ, at list</div><div class="amt" id="tot-hs">$0</div><div class="meter"><i id="m-hs"></i></div></div>
             </div>
           </div>
 
@@ -474,7 +502,7 @@
               <h3>At the first renewal (year 4)</h3>
               <p class="rn-intro">What each vendor&rsquo;s paper allows after the 36-month term.</p>
               <div class="rn-row sf"><span class="who">Salesforce</span><strong id="rn-sf">$0</strong><span class="note">At most. Your first renewal is capped at 5%.<sup class="src"><a href="#s3">3</a></sup></span></div>
-              <div class="rn-row hs"><span class="who">HubSpot</span><strong id="rn-hs">$0</strong><span class="note">&ldquo;Upon renewal, we may increase your Subscription Fees up to our then-current list price.&rdquo;<sup class="src"><a href="#s5">5</a></sup></span></div>
+              <div class="rn-row hs"><span class="who">HubSpot</span><strong id="rn-hs">$0</strong><span class="note">&ldquo;Upon renewal, we may increase your Subscription Fees up to our then-current list price.&rdquo;<sup class="src"><a href="#s5">5</a></sup><span id="rn-hs-discount-note"></span></span></div>
             </div>
             <div class="card breakdown reveal">
               <h3>What&rsquo;s in the number</h3>
@@ -519,7 +547,7 @@
         </div>
         <div class="b-bars">
           <div class="b-bar sf"><div class="b-meta"><span id="b-sf-who">Salesforce + SMBHD</span><b id="b-sf">$0</b></div><div class="b-track"><i id="b-sf-bar"></i></div></div>
-          <div class="b-bar hs"><div class="b-meta"><span>HubSpot + RevOps HQ, at list</span><b id="b-hs">$0</b></div><div class="b-track"><i id="b-hs-bar"></i></div></div>
+          <div class="b-bar hs"><div class="b-meta"><span id="b-hs-who">HubSpot + RevOps HQ, at list</span><b id="b-hs">$0</b></div><div class="b-track"><i id="b-hs-bar"></i></div></div>
         </div>
       </div>
     </div>
